@@ -19,10 +19,6 @@ libraryDependencies ++= javaFXModules.map(m =>
 )
 
 // Akka
-val AkkaVersion = "2.6.14"
-libraryDependencies ++= Seq(
-    "com.typesafe.akka" %% "akka-actor-typed" % AkkaVersion,
-    "com.typesafe.akka" %% "akka-actor-testkit-typed" % AkkaVersion % Test
-)
-
+val AkkaVersion = "2.6.15"
+libraryDependencies += "com.typesafe.akka" %% "akka-actor-typed" % AkkaVersion
 libraryDependencies += "com.typesafe.akka" %% "akka-actor-testkit-typed" % AkkaVersion % Test

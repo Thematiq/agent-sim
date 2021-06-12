@@ -1,4 +1,4 @@
-import engine.{Vector2D}
+import engine.Vector2D
 import org.scalatest._
 import flatspec._
 import matchers._
