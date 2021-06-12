@@ -1,7 +1,6 @@
+package engine.agents
+
 import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
-import engine.agents.{GetState, Patient, PostState, PromiseCommand}
-import org.scalatest._
-import matchers._
 import org.scalatest.wordspec.AnyWordSpecLike
 
 
