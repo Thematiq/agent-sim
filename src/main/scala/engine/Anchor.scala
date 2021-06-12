@@ -1,6 +1,0 @@
-package engine
-
-
-object Anchor {
-
-}
