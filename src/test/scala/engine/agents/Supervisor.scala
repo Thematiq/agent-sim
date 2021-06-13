@@ -22,7 +22,7 @@ class AsyncSupervisorSpec extends ScalaTestWithActorTestKit with AnyWordSpecLike
             supervisor ! DebugCell(DebugPatient(Move), Vector2D(0, 0))
 
             // Async tests are dumb
-            Thread.sleep(500)
+            Thread.sleep(10)
 
             supervisor ! GetPopulationAt(Vector2D(0, 0), probe.ref)
             probe.expectMessage(PostPopulation(1))
