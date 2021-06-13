@@ -40,5 +40,20 @@ class AsyncCellSpec extends ScalaTestWithActorTestKit with AnyWordSpecLike {
             cellOne ! GetPopulation(probe.ref)
             probe.expectMessage(PostPopulation(3))
         }
+
+        "generate report using Statistician Agent" in {
+            val supZero = testKit.createTestProbe[SupervisorCommand]()
+            val cellZero = testKit.spawn(Cell(supZero.ref, 2, Vector2D(0, 0)))
+            val probe = testKit.createTestProbe[PromiseCommand]()
+
+            cellZero ! GetCellReport(probe.ref)
+            supZero.expectNoMessage()
+            val msg = probe.expectMessageType[PostCellReport]
+            msg.pos should be (Vector2D(0, 0))
+            msg.report.summary foreach ( k =>
+                if (k._1 == Patient.Health.Healthy) k._2 should be (2)
+                else k._2 should be (0)
+            )
+        }
     }
 }

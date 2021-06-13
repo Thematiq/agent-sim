@@ -15,7 +15,7 @@ class AsyncSupervisorSpec extends ScalaTestWithActorTestKit with AnyWordSpecLike
             probe.expectMessage(PostState(Patient.State()))
         }
 
-        "Handle patient transition" in {
+        "handle patient transition" in {
             val supervisor = testKit.spawn(Supervisor(1, 1, 2))
             val probe = testKit.createTestProbe[PromiseCommand]()
 
@@ -35,6 +35,22 @@ class AsyncSupervisorSpec extends ScalaTestWithActorTestKit with AnyWordSpecLike
             }
 
             anomalies should be (2)
+        }
+        "generate report for every cell using Statistician Agent" in {
+            val supervisor = testKit.spawn(Supervisor(1, 1, 2))
+            val probe = testKit.createTestProbe[PromiseCommand]()
+
+            supervisor ! GetReport(probe.ref)
+            val msg = probe.expectMessageType[PostReport]
+
+            for (x <- 0 to 1; y <- 0 to 1) {
+                (msg.report.summary contains Vector2D(x, y)) should be (true)
+                msg.report.summary(Vector2D(x, y)).summary foreach ( k =>
+                    if (k._1 == Patient.Health.Healthy) k._2 should be (2)
+                    else k._2 should be (0)
+                )
+            }
+
         }
     }
 }

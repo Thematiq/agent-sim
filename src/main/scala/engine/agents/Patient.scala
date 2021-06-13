@@ -7,7 +7,7 @@ import akka.actor.typed.scaladsl.Behaviors
 object Patient {
     object Health extends Enumeration {
         type Health = Value
-        val Healthy, Infected, Dead = Value
+        val Healthy, Infected, Recovered, Dead = Value
     }
 
     final case class State(
