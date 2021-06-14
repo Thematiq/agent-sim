@@ -60,6 +60,9 @@ final case class Accommodate(cell: ActorRef[CellCommand]) extends PatientCommand
  */
 case object Poison extends Command with PatientCommand with CellCommand with SupervisorCommand
 
-sealed trait DebugCommands
-final case class DebugPatient(cmd: PatientCommand) extends DebugCommands with CellCommand
-final case class DebugCell(cmd: CellCommand, pos: Vector2D) extends DebugCommands with SupervisorCommand
+sealed trait DebugCommand
+final case class DebugPatient(cmd: PatientCommand) extends DebugCommand with CellCommand
+final case class DebugCell(cmd: CellCommand, pos: Vector2D) extends DebugCommand with SupervisorCommand
+case object Inject extends DebugCommand with PatientCommand
+case object Vaccinate extends DebugCommand with PatientCommand
+case object Shoot extends DebugCommand with PatientCommand

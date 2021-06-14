@@ -15,7 +15,7 @@ object Supervisor {
                 city += (vec -> context.spawn(Cell(context.self, initialPop, vec), "Cell" + vec.safeString))
             }
 
-            Behaviors.receiveMessage {
+            Behaviors.receive { (context, message) => message match {
                 case Poison =>
                     city foreach (x => x._2 ! Poison)
                     Behaviors.stopped
@@ -42,6 +42,9 @@ object Supervisor {
                 case DebugCell(cmd, cell) =>
                     city(cell) ! cmd
                     Behaviors.same
-            }
+                case e =>
+                    context.log.info("Unhandled event {}", e)
+                    Behaviors.unhandled
+            }}
         }
 }

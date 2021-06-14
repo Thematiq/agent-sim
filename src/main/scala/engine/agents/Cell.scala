@@ -45,5 +45,8 @@ object Cell {
             case Poison =>
                 currentPop.foreach(x => x ! Poison)
                 Behaviors.stopped
+            case e =>
+                context.log.info("Unhandled event {}", e)
+                Behaviors.unhandled
         }}
 }
