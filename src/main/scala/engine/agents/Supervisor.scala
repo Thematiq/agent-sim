@@ -16,6 +16,9 @@ object Supervisor {
             }
 
             Behaviors.receive { (context, message) => message match {
+                case WorldTick =>
+                    city foreach ( k => k._2 ! DispatchTick)
+                    Behaviors.same
                 case Poison =>
                     city foreach (x => x._2 ! Poison)
                     Behaviors.stopped

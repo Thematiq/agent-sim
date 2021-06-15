@@ -30,7 +30,7 @@ class AsyncCellSpec extends ScalaTestWithActorTestKit with AnyWordSpecLike {
             val cellOne = testKit.spawn(Cell(supZero.ref, 2, Vector2D(1, 1)))
             val probe = testKit.createTestProbe[PromiseCommand]()
 
-            cellZero ! DebugPatient(Move)
+            cellZero ! DebugRandomPatient(Move)
             val msg = supZero.expectMessageType[MoveFromCell]
             msg.pos should be (Vector2D(0, 0))
             cellZero ! GetPopulation(probe.ref)
@@ -51,7 +51,7 @@ class AsyncCellSpec extends ScalaTestWithActorTestKit with AnyWordSpecLike {
             val msg = probe.expectMessageType[PostCellReport]
             msg.pos should be (Vector2D(0, 0))
             msg.report.summary foreach ( k =>
-                if (k._1 == Patient.Health.Healthy) k._2 should be (2)
+                if (k._1 == Health.Healthy) k._2 should be (2)
                 else k._2 should be (0)
             )
         }

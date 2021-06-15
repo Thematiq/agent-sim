@@ -1,9 +1,7 @@
 package engine.agents
 
-import engine.{Vector2D, agents}
+import engine.Vector2D
 import akka.actor.typed.ActorRef
-import akka.util.Timeout
-
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
 
 
@@ -32,6 +30,7 @@ final case class PostToEveryCell(cmd: CellCommand) extends SupervisorCommand
 final case class GetRandomStateAt(pos: Vector2D, replyTo: ActorRef[PromiseCommand]) extends SupervisorCommand
 final case class GetPopulationAt(pos: Vector2D, replyTo: ActorRef[PromiseCommand]) extends SupervisorCommand
 final case class MoveFromCell(pos: Vector2D, patient: ActorRef[PatientCommand]) extends SupervisorCommand
+case object WorldTick extends SupervisorCommand
 
 /**
  * Cell commands
@@ -43,7 +42,7 @@ final case class GetCellReport(replyTo: ActorRef[PromiseCommand], timeout: Finit
 final case class GetPopulation(replyTo: ActorRef[PromiseCommand]) extends CellCommand
 final case class MoveFrom(patient: ActorRef[PatientCommand]) extends CellCommand
 final case class MoveTo(patient: ActorRef[PatientCommand]) extends CellCommand
-
+case object DispatchTick extends CellCommand
 
 /**
  * Patient commands
@@ -53,7 +52,7 @@ case object DoStuff extends PatientCommand
 case object Move extends PatientCommand
 final case class GetState(replyTo: ActorRef[PromiseCommand]) extends PatientCommand
 final case class Accommodate(cell: ActorRef[CellCommand]) extends PatientCommand
-
+case object Tick extends PatientCommand
 
 /**
  * Special ones
@@ -61,7 +60,7 @@ final case class Accommodate(cell: ActorRef[CellCommand]) extends PatientCommand
 case object Poison extends Command with PatientCommand with CellCommand with SupervisorCommand
 
 sealed trait DebugCommand
-final case class DebugPatient(cmd: PatientCommand) extends DebugCommand with CellCommand
+final case class DebugRandomPatient(cmd: PatientCommand) extends DebugCommand with CellCommand
 final case class DebugCell(cmd: CellCommand, pos: Vector2D) extends DebugCommand with SupervisorCommand
 case object Inject extends DebugCommand with PatientCommand
 case object Vaccinate extends DebugCommand with PatientCommand

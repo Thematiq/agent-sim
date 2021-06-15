@@ -19,7 +19,7 @@ class AsyncSupervisorSpec extends ScalaTestWithActorTestKit with AnyWordSpecLike
             val supervisor = testKit.spawn(Supervisor(1, 1, 2))
             val probe = testKit.createTestProbe[PromiseCommand]()
 
-            supervisor ! DebugCell(DebugPatient(Move), Vector2D(0, 0))
+            supervisor ! DebugCell(DebugRandomPatient(Move), Vector2D(0, 0))
 
             // Async tests are dumb
             Thread.sleep(10)
@@ -46,7 +46,7 @@ class AsyncSupervisorSpec extends ScalaTestWithActorTestKit with AnyWordSpecLike
             for (x <- 0 to 1; y <- 0 to 1) {
                 (msg.report.summary contains Vector2D(x, y)) should be (true)
                 msg.report.summary(Vector2D(x, y)).summary foreach ( k =>
-                    if (k._1 == Patient.Health.Healthy) k._2 should be (2)
+                    if (k._1 == Health.Healthy) k._2 should be (2)
                     else k._2 should be (0)
                 )
             }

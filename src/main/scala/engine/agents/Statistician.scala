@@ -12,8 +12,12 @@ object Statistician {
 
     private def awaitCommand(ref: ActorRef[SupervisorCommand]): Behavior[ReportCommand] = Behaviors.receive { (context, message) => message match {
         case GenerateReport(replyTo, timeout) =>
-            ref ! PostToEveryCell(GetCellReport(context.self, (timeout * 8) / 10))
+            context.log.info("Received report request")
+            ref ! PostToEveryCell(GetCellReport(context.self, (timeout * 5) / 10))
             awaitResponse(ref, replyTo, timeout)
+        case e =>
+            context.log.debug("Received ignored message {}", e)
+            Behaviors.unhandled
     }}
 
     private def awaitResponse(ref: ActorRef[SupervisorCommand], to: ActorRef[PromiseCommand], timeout: FiniteDuration): Behavior[ReportCommand] = Behaviors.setup { _ =>
@@ -41,7 +45,7 @@ object CellStatistician {
     }}
 
     private def awaitResponse(ref: ActorRef[CellCommand], to: ActorRef[PromiseCommand], timeout: FiniteDuration, cell: Vector2D): Behavior[ReportCommand] = Behaviors.setup { _ =>
-        var raw: Map[Patient.Health.Health, Int] = Map()
+        var raw: Map[Health.Health, Int] = Map()
         Behaviors.withTimers[ReportCommand] { timers =>
             timers.startSingleTimer(Finished, timeout)
             Behaviors.receiveMessagePartial {

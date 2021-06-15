@@ -20,18 +20,18 @@ class AsyncPatientSpec extends ScalaTestWithActorTestKit with AnyWordSpecLike {
             // Inject
             patientZero ! Inject
             patientZero ! GetState(probe.ref)
-            probe.expectMessage(PostState(Patient.State(Patient.Health.Infected)))
+            probe.expectMessage(PostState(Patient.State(Health.Infected)))
             // Vaccinate
             patientZero ! Vaccinate
             patientZero ! GetState(probe.ref)
-            probe.expectMessage(PostState(Patient.State(Patient.Health.Recovered)))
+            probe.expectMessage(PostState(Patient.State(Health.Recovered)))
             // Kill
             patientZero ! Shoot
             patientZero ! GetState(probe.ref)
-            probe.expectMessage(PostState(Patient.State(Patient.Health.Dead)))
+            probe.expectMessage(PostState(Patient.State(Health.Dead)))
         }
 
-        "inform the cell about leaving and accomodate in the new cell" in {
+        "inform the cell about leaving and accommodate in the new cell" in {
             val cellZero = testKit.createTestProbe[CellCommand]()
             val cellOne = testKit.createTestProbe[CellCommand]()
             val patientZero = testKit.spawn(Patient(cellZero.ref))

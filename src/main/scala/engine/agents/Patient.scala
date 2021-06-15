@@ -5,11 +5,6 @@ import akka.actor.typed.scaladsl.Behaviors
 
 
 object Patient {
-    object Health extends Enumeration {
-        type Health = Value
-        val Healthy, Infected, Recovered, Dead = Value
-    }
-
     final case class State(
         state: Health.Health = Health.Healthy
     )
@@ -18,6 +13,10 @@ object Patient {
         = healthyAutomata(ref, State(state))
 
     private def healthyAutomata(ref: ActorRef[CellCommand], state: State): Behavior[PatientCommand] = Behaviors.receive { (context, message) => message match {
+        case Tick =>
+            // More stuff later on
+            ref ! MoveFrom(context.self)
+            Behaviors.same
         case Move =>
             ref ! MoveFrom(context.self)
             Behaviors.same
