@@ -7,7 +7,8 @@ final case class Config(
                            durationMean: Double,
                            durationStd: Double,
                            severity: Double,
-                           mobility: Double
+                           mobility: Double,
+                           sneezebility: Double
 )
 
 object Config {
@@ -17,15 +18,16 @@ object Config {
         }
     }
 
-    def apply(ir: Double, mr: Double, dm: Double, ds: Double, s: Double, m: Double): Config = {
+    def apply(ir: Double, mr: Double, dm: Double, ds: Double, s: Double, m: Double, sn: Double): Config = {
         check(ir, "Infection rate")
         check(mr, "Mortality rate")
         check(dm, "Mean duration", 0, 20)
         check(ds, "Std duration", 0, 20)
         check(s, "Severity")
         check(m, "Mobility")
-        new Config(ir, mr, dm, ds, s, m)
+        check(sn, "Sneezebility")
+        new Config(ir, mr, dm, ds, s, m, sn)
     }
 
-    def apply(): Config = Config(0.1, 0.1, 5, 2, 0.1, 0.4)
+    def apply(): Config = Config(0.5, 0.1, 3, 2, 0.1, 0.4, 0.7)
 }

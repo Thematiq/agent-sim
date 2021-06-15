@@ -53,6 +53,7 @@ case object Move extends PatientCommand
 final case class GetState(replyTo: ActorRef[PromiseCommand]) extends PatientCommand
 final case class Accommodate(cell: ActorRef[CellCommand]) extends PatientCommand
 case object Tick extends PatientCommand
+case object Sneeze extends PatientCommand with CellCommand
 
 /**
  * Special ones

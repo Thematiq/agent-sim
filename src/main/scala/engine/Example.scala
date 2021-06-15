@@ -1,6 +1,6 @@
 package engine
 
-import engine.agents.{Anchor, Config, Health, Report, WorldTick}
+import engine.agents._
 
 import scala.util.{Failure, Success}
 import scala.concurrent.duration.DurationInt
@@ -8,10 +8,10 @@ import scala.concurrent.duration.DurationInt
 
 object Example {
     def main(args: Array[String]): Unit = {
-        val timeout = 100.milliseconds
-        val X = 5
-        val Y = 5
-        val pop = 5
+        val timeout = 200.milliseconds
+        val X = 10
+        val Y = 10
+        val pop = 20
 
         val anchor = Anchor(X, Y, pop, timeout, Config())
 
@@ -20,7 +20,11 @@ object Example {
         // Let the system prepare itself
         Thread.sleep(2000)
 
-        for (_ <- 1 to 5) {
+        anchor.sendCommand(DebugCell(DebugRandomPatient(Inject), Vector2D(0, 0)))
+
+        Thread.sleep(100)
+
+        for (_ <- 1 to 100) {
             val future = anchor.probeReport()
             implicit val ec = anchor.ec
             var report: Report = Report(Map())
@@ -34,17 +38,19 @@ object Example {
             for (y <- 0 to Y) {
                 for (x <- 0 to X) {
                     val sub = report.summary(Vector2D(x, y))
+                    val healthy = sub.get(Health.Healthy)
+                    val infected = sub.get(Health.Infected)
+                    val dead = sub.get(Health.Dead)
+                    val recovered = sub.get(Health.Recovered)
                     print(
-                        (sub.summary getOrElse(Health.Healthy, 0)).toString + "/" +
-                            (sub.summary getOrElse(Health.Infected, 0)).toString + "/" +
-                            (sub.summary getOrElse(Health.Recovered, 0)).toString + "/" +
-                            (sub.summary getOrElse(Health.Dead, 0)).toString + "\t"
+                        healthy.toString + "/" + infected.toString + "/" +
+                        dead.toString + "/" + recovered.toString + "\t"
                     )
-                    sum += sub.summary.values.sum
                 }
                 println("")
             }
-            println("!!!! TOTAL SUM: " + sum.toString)
+            println("====== STATS =====")
+            for ((k, v) <- report.total) println(k.toString + ": " + v.toString)
             anchor.sendCommand(WorldTick)
             Thread.sleep(timeout.toMillis * 2)
         }

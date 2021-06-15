@@ -22,6 +22,9 @@ object Cell {
 
     private def cellAutomata(system: Refs, pos: Vector2D, currentPop: Vector[ActorRef[PatientCommand]]): Behavior[CellCommand] =
         Behaviors.receive { (context, message) => message match {
+            case Sneeze =>
+                Tools.getRandomElement(currentPop) ! Sneeze
+                Behaviors.same
             case DispatchTick =>
                 currentPop foreach ( x => x ! Tick)
                 Behaviors.same
@@ -32,7 +35,6 @@ object Cell {
                 Tools.getRandomElement(currentPop) ! GetState(replyTo)
                 Behaviors.same
             case GetEveryState(replyTo) =>
-//                context.log.debug("Current cell members: {}", currentPop.length)
                 currentPop foreach (x => x ! GetState(replyTo))
                 Behaviors.same
             case MoveFrom(patient) =>
