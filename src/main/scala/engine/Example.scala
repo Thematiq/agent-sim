@@ -1,6 +1,6 @@
 package engine
 
-import engine.agents.{Anchor, Health, Report, WorldTick}
+import engine.agents.{Anchor, Config, Health, Report, WorldTick}
 
 import scala.util.{Failure, Success}
 import scala.concurrent.duration.DurationInt
@@ -13,7 +13,7 @@ object Example {
         val Y = 5
         val pop = 5
 
-        val anchor = Anchor(X, Y, pop, timeout)
+        val anchor = Anchor(X, Y, pop, timeout, Config())
 
         println("Hello")
 

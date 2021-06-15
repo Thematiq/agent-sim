@@ -13,7 +13,7 @@ import scala.util.Success
 
 class AnchorSpec extends AnyFlatSpec with should.Matchers with ScalaFutures {
     "An Anchor" should "return promise of the patient state" in {
-        val anchor = Anchor()
+        val anchor = Anchor(config = Config())
 
         // Read data
         val report: Future[Report] = anchor.probeReport()

@@ -52,7 +52,7 @@ object CellStatistician {
                 case Finished =>
                     to ! PostCellReport(CellReport(raw), cell)
                     awaitCommand(ref)
-                case PostState(Patient.State(hp)) =>
+                case PostState(Patient.State(hp, _)) =>
                     raw += ((hp, (raw getOrElse (hp, 0)) + 1))
                     Behaviors.same
     }}}

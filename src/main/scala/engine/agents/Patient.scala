@@ -6,11 +6,12 @@ import akka.actor.typed.scaladsl.Behaviors
 
 object Patient {
     final case class State(
-        state: Health.Health = Health.Healthy
+        state: Health.Health = Health.Healthy,
+        config: Config
     )
 
-    def apply(ref: ActorRef[CellCommand],state: Health.Health = Health.Healthy): Behavior[PatientCommand]
-        = healthyAutomata(ref, State(state))
+    def apply(ref: ActorRef[CellCommand], state: Health.Health = Health.Healthy, config: Config): Behavior[PatientCommand]
+        = healthyAutomata(ref, State(state, config))
 
     private def healthyAutomata(ref: ActorRef[CellCommand], state: State): Behavior[PatientCommand] = Behaviors.receive { (context, message) => message match {
         case Tick =>

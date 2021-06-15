@@ -8,8 +8,8 @@ import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContextExecutor, Future}
 
 
-class Anchor(val x: Int, val y: Int, val initialPop: Int = 1, time: Timeout = 50.milliseconds, arbitraryTimeout: Timeout = 5.seconds) {
-    private val system: ActorSystem[SupervisorCommand] = ActorSystem(Supervisor(x, y, initialPop), "Controller")
+class Anchor(val x: Int, val y: Int, val initialPop: Int = 1, time: Timeout = 50.milliseconds, arbitraryTimeout: Timeout = 5.seconds, config: Config) {
+    private val system: ActorSystem[SupervisorCommand] = ActorSystem(Supervisor(x, y, initialPop, config), "Controller")
     private val supervisor: RecipientRef[SupervisorCommand] = system.ref
 
     implicit private val timeout: Timeout = arbitraryTimeout
@@ -30,5 +30,5 @@ class Anchor(val x: Int, val y: Int, val initialPop: Int = 1, time: Timeout = 50
 }
 
 object Anchor {
-    def apply(x: Int = 5, y: Int = 5, pop: Int = 5, timeout: Timeout = 50.milliseconds) = new Anchor(x, y, pop, timeout)
+    def apply(x: Int = 5, y: Int = 5, pop: Int = 5, timeout: Timeout = 50.milliseconds, config: Config) = new Anchor(x, y, pop, timeout, config = config)
 }

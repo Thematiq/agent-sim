@@ -9,14 +9,14 @@ object Cell {
     private def getPatientName(pos: Vector2D, id: Int): String = pos.safeString + "_" + id.toString
     private def getStatsName(pos: Vector2D): String = pos.safeString + "_stats"
 
-    private final case class Refs(supervisor: ActorRef[SupervisorCommand], statistician: ActorRef[ReportCommand])
+    private final case class Refs(supervisor: ActorRef[SupervisorCommand], statistician: ActorRef[ReportCommand], config: Config)
 
-    def apply(supervisor: ActorRef[SupervisorCommand], initialPop: Int, pos: Vector2D): Behavior[CellCommand] =
+    def apply(supervisor: ActorRef[SupervisorCommand], initialPop: Int, pos: Vector2D, config: Config): Behavior[CellCommand] =
         Behaviors.setup { context =>
             val pop: Vector[ActorRef[PatientCommand]] =
-                Vector.tabulate(initialPop) ( x => context.spawn(Patient(context.self), getPatientName(pos, x)))
+                Vector.tabulate(initialPop) ( x => context.spawn(Patient(context.self, config = config), getPatientName(pos, x)))
             val stats = context.spawn(CellStatistician(context.self), getStatsName(pos))
-            cellAutomata(Refs(supervisor, stats), pos, pop)
+            cellAutomata(Refs(supervisor, stats, config), pos, pop)
         }
 
 

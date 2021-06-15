@@ -6,17 +6,18 @@ import engine.Vector2D
 
 
 class AsyncSupervisorSpec extends ScalaTestWithActorTestKit with AnyWordSpecLike {
+    val config = Config()
 
     "A Supervisor Agent" must {
         "return Patient State from the given Cell" in {
-            val supervisor = testKit.spawn(Supervisor(5, 5, 5))
+            val supervisor = testKit.spawn(Supervisor(5, 5, 5, config = config))
             val probe = testKit.createTestProbe[PromiseCommand]()
             supervisor ! GetRandomStateAt(Vector2D(3, 3), probe.ref)
-            probe.expectMessage(PostState(Patient.State()))
+            probe.expectMessage(PostState(Patient.State(config = config)))
         }
 
         "handle patient transition" in {
-            val supervisor = testKit.spawn(Supervisor(1, 1, 2))
+            val supervisor = testKit.spawn(Supervisor(1, 1, 2, config = config))
             val probe = testKit.createTestProbe[PromiseCommand]()
 
             supervisor ! DebugCell(DebugRandomPatient(Move), Vector2D(0, 0))
@@ -37,7 +38,7 @@ class AsyncSupervisorSpec extends ScalaTestWithActorTestKit with AnyWordSpecLike
             anomalies should be (2)
         }
         "generate report for every cell using Statistician Agent" in {
-            val supervisor = testKit.spawn(Supervisor(1, 1, 2))
+            val supervisor = testKit.spawn(Supervisor(1, 1, 2, config = config))
             val probe = testKit.createTestProbe[PromiseCommand]()
 
             supervisor ! GetReport(probe.ref)

@@ -6,18 +6,21 @@ import engine.Vector2D
 
 
 class AsyncCellSpec extends ScalaTestWithActorTestKit with AnyWordSpecLike {
+
+    val config = Config()
+
     "A Cell Agent" must {
         "return random Patient State" in {
             val supZero = testKit.createTestProbe[SupervisorCommand]()
-            val cellZero = testKit.spawn(Cell(supZero.ref, 2, Vector2D(0, 0)))
+            val cellZero = testKit.spawn(Cell(supZero.ref, 2, Vector2D(0, 0), config))
             val probe = testKit.createTestProbe[PromiseCommand]()
             cellZero ! GetRandomState(probe.ref)
-            probe.expectMessage(PostState(Patient.State()))
+            probe.expectMessage(PostState(Patient.State(config = config)))
             supZero.expectNoMessage()
         }
         "return population of the cell" in {
             val supZero = testKit.createTestProbe[SupervisorCommand]()
-            val cellZero = testKit.spawn((Cell(supZero.ref, 2, Vector2D(0, 0))))
+            val cellZero = testKit.spawn((Cell(supZero.ref, 2, Vector2D(0, 0), config)))
             val probe = testKit.createTestProbe[PromiseCommand]()
             cellZero ! GetPopulation(probe.ref)
             probe.expectMessage(PostPopulation(2))
@@ -26,8 +29,8 @@ class AsyncCellSpec extends ScalaTestWithActorTestKit with AnyWordSpecLike {
 
         "leave the patient after moving out and accommodate in the new cell" in {
             val supZero = testKit.createTestProbe[SupervisorCommand]()
-            val cellZero = testKit.spawn(Cell(supZero.ref, 2, Vector2D(0, 0)))
-            val cellOne = testKit.spawn(Cell(supZero.ref, 2, Vector2D(1, 1)))
+            val cellZero = testKit.spawn(Cell(supZero.ref, 2, Vector2D(0, 0), config))
+            val cellOne = testKit.spawn(Cell(supZero.ref, 2, Vector2D(1, 1), config))
             val probe = testKit.createTestProbe[PromiseCommand]()
 
             cellZero ! DebugRandomPatient(Move)
@@ -43,7 +46,7 @@ class AsyncCellSpec extends ScalaTestWithActorTestKit with AnyWordSpecLike {
 
         "generate report using Statistician Agent" in {
             val supZero = testKit.createTestProbe[SupervisorCommand]()
-            val cellZero = testKit.spawn(Cell(supZero.ref, 2, Vector2D(0, 0)))
+            val cellZero = testKit.spawn(Cell(supZero.ref, 2, Vector2D(0, 0), config))
             val probe = testKit.createTestProbe[PromiseCommand]()
 
             cellZero ! GetCellReport(probe.ref)

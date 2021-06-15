@@ -6,13 +6,13 @@ import engine.{Vector2D, Tools}
 
 
 object Supervisor {
-    def apply(X: Int, Y: Int, initialPop: Int): Behavior[SupervisorCommand] =
+    def apply(X: Int, Y: Int, initialPop: Int, config: Config): Behavior[SupervisorCommand] =
         Behaviors.setup { context =>
             var city: Map[Vector2D, ActorRef[CellCommand]] = Map()
             val stats = context.spawn(Statistician(context.self), "Statistician")
             for (x <- 0 to X; y <- 0 to Y) {
                 val vec = Vector2D(x, y)
-                city += (vec -> context.spawn(Cell(context.self, initialPop, vec), "Cell" + vec.safeString))
+                city += (vec -> context.spawn(Cell(context.self, initialPop, vec, config), "Cell" + vec.safeString))
             }
 
             Behaviors.receive { (context, message) => message match {
