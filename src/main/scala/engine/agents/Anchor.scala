@@ -9,6 +9,8 @@ import scala.concurrent.{ExecutionContextExecutor, Future}
 
 
 class Anchor(val x: Int, val y: Int, val initialPop: Int = 1, time: Timeout = 50.milliseconds, arbitraryTimeout: Timeout = 5.seconds, config: Config) {
+    if (x == 0 && y == 0) throw new RuntimeException("Map must be larger in size than 1x1!")
+
     private val system: ActorSystem[SupervisorCommand] = ActorSystem(Supervisor(x, y, initialPop, config), "Controller")
     private val supervisor: RecipientRef[SupervisorCommand] = system.ref
 
