@@ -9,7 +9,7 @@ object Supervisor {
     def apply(X: Int, Y: Int, initialPop: Int, config: Config): Behavior[SupervisorCommand] =
         Behaviors.setup { context =>
             var city: Map[Vector2D, ActorRef[CellCommand]] = Map()
-            val stats = context.spawn(Statistician(context.self), "Statistician")
+            val stats = context.spawn(Statistician(context.self, (X+1) * (Y+1)), "Statistician")
             for (x <- 0 to X; y <- 0 to Y) {
                 val vec = Vector2D(x, y)
                 city += (vec -> context.spawn(Cell(context.self, initialPop, vec, config), "Cell" + vec.safeString))

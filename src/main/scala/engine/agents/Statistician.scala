@@ -8,30 +8,32 @@ import scala.concurrent.duration.FiniteDuration
 
 
 object Statistician {
-    def apply(ref: ActorRef[SupervisorCommand]): Behavior[ReportCommand] = awaitCommand(ref)
+    def apply(ref: ActorRef[SupervisorCommand], cells: Int): Behavior[ReportCommand] = awaitCommand(ref, cells)
 
-    private def awaitCommand(ref: ActorRef[SupervisorCommand]): Behavior[ReportCommand] = Behaviors.receive { (context, message) => message match {
+    private def awaitCommand(ref: ActorRef[SupervisorCommand], cells: Int): Behavior[ReportCommand] = Behaviors.receive { (context, message) => message match {
         case GenerateReport(replyTo, timeout) =>
             context.log.info("Received report request")
             ref ! PostToEveryCell(GetCellReport(context.self, (timeout * 5) / 10))
-            awaitResponse(ref, replyTo, timeout)
+            awaitResponse(ref, replyTo, cells, cells, Map())
         case e =>
             context.log.debug("Received ignored message {}", e)
             Behaviors.unhandled
     }}
 
-    private def awaitResponse(ref: ActorRef[SupervisorCommand], to: ActorRef[PromiseCommand], timeout: FiniteDuration): Behavior[ReportCommand] = Behaviors.setup { _ =>
-        var raw: Map[Vector2D, CellReport] = Map()
-        Behaviors.withTimers { timers =>
-            timers.startSingleTimer(Finished, timeout)
-            Behaviors.receiveMessagePartial {
+    private def awaitResponse(ref: ActorRef[SupervisorCommand], to: ActorRef[PromiseCommand], cells: Int, cellsLeft: Int, raw: Map[Vector2D, CellReport]): Behavior[ReportCommand] =
+        Behaviors.receiveMessage {
                 case PostCellReport(report, pos) =>
-                    raw += ((pos, report))
-                    Behaviors.same
+                    val nraw = raw + ((pos, report))
+                    if (cellsLeft == 1) {
+                        to ! PostReport(Report(nraw))
+                        awaitCommand(ref, cells)
+                    } else {
+                        awaitResponse(ref, to, cells, cellsLeft - 1, nraw)
+                    }
                 case Finished =>
                     to ! PostReport(Report(raw))
-                    awaitCommand(ref)
-    }}}
+                    awaitCommand(ref, cells)
+    }
 }
 
 
