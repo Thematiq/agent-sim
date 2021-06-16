@@ -11,6 +11,8 @@ final case class Report(summary: Map[Vector2D, CellReport]) {
     }
 
     lazy val total: Map[Health.Health, Int] = generateTotal
+
+    def getTotal(status: Health.Health): Int = total getOrElse (status, 0)
 }
 
 final case class CellReport(summary: Map[Health.Health, Int]) {

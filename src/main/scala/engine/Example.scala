@@ -4,6 +4,7 @@ import engine.agents._
 
 import scala.util.{Failure, Success}
 import scala.concurrent.duration.DurationInt
+import java.io.{PrintWriter, File}
 
 
 object Example {
@@ -12,8 +13,12 @@ object Example {
         val X = 10
         val Y = 10
         val pop = 20
+        val csv = new PrintWriter(new File("data.csv"))
 
         val anchor = Anchor(X, Y, pop, timeout, Config())
+        csv.write(
+            "Healthy,Infected,Dead,Recovered\n"
+        )
 
         println("Hello")
 
@@ -53,7 +58,14 @@ object Example {
             for ((k, v) <- report.total) println(k.toString + ": " + v.toString)
             anchor.sendCommand(WorldTick)
             Thread.sleep(timeout.toMillis * 2)
+            csv.write(
+                report.getTotal(Health.Healthy) + "," +
+                report.getTotal(Health.Infected) + "," +
+                report.getTotal(Health.Dead) + "," +
+                report.getTotal(Health.Recovered) + "\n"
+            )
         }
         anchor.close()
+        csv.close()
     }
 }
